@@ -1,7 +1,12 @@
+# vscode
+.vscode
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
 *$py.class
+
+tempCodeRunnerFile.py
 
 # C extensions
 *.so
