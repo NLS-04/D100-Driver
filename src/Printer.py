@@ -9,6 +9,7 @@ import enum
 import logging
 
 from device_interface.printer_io import PrinterIO
+from ImageUtils import Canvas, Alignment, Modifier
 
 # partially as labelled in https://www.novopos.ch/client/EPSON/TM-T20/TM-T20_eng_qr.pdf
 class ESC_POS_CONSTANT():
@@ -82,12 +83,6 @@ class High_Density_Flag(enum.Enum):
     HEIGHT: int = 0b10
     BOTH  : int = WIDTH | HEIGHT
 
-class Alignment(enum.Enum):
-    """Horizontal alignment of content"""
-    LEFT   = 0
-    CENTER = 1
-    RIGHT  = 2
-
 class MODE(enum.Enum):
     '''Print Mode'''
     DIRECT = enum.auto()
@@ -101,10 +96,6 @@ class MODE(enum.Enum):
     in *BUFFERED* mode all print events will be buffered in the internal view
     buffer and must be explicitly flushed to be send to the thermal printer
     """
-
-class MODIFIER(enum.IntFlag):
-    '''character modifier for printing text'''
-    ...
 
 
 u8 = int
@@ -180,6 +171,7 @@ class Printer( PrinterIO ):
         self._print_auto_feed = auto_feeding
         
         self._print_mode = MODE.DIRECT
+        self._image_buffer = Canvas( self.dots_width )
     
     def __del__(self):
         """clean up printer communication"""
@@ -312,8 +304,11 @@ class Printer( PrinterIO ):
     _print_mode: MODE
     '''internal printing mode'''
     
-    _modifier: MODIFIER
+    _modifier: Modifier
     '''active character modifier'''
+    
+    _image_buffer: Canvas
+    '''internal image buffer'''
     
     # mode --------------------------------------------------------------------
     def set_mode(self, mode:MODE) -> None:
@@ -337,80 +332,80 @@ class Printer( PrinterIO ):
         raise NotImplementedError()
     
     # text --------------------------------------------------------------------
-    def print( self, text:str ) -> Self:
+    def print(self, text:str) -> Self:
         ...
     
-    def set_font( self, font:object ) -> Self:
+    def set_font(self, font:object) -> Self:
         ...
-    def get_font( self ) -> object:
+    def get_font(self) -> object:
         ...
    
-    def set_font_size( self, size:int ) -> Self:
+    def set_font_size(self, size:int) -> Self:
         ...
-    def get_font_size( self ) -> int:
+    def get_font_size(self) -> int:
         ...
     
-    def set_line_spacing( self, n:u8 ) -> Self:
+    def set_line_spacing(self, n:u8) -> Self:
         '''set line spacing [ESC 3]'''
         ...
-    def get_line_spacing( self ) -> u8:
+    def get_line_spacing(self) -> u8:
         ...
     
-    def set_right_space( self, n:u8 ) -> Self:
+    def set_right_space(self, n:u8) -> Self:
         '''set right-side character spacing [ESC SP]'''
         ...
-    def get_right_space( self) -> u8:
+    def get_right_space(self) -> u8:
         '''get right-side character spacing'''
         ...
     
-    def set_text_modifier( self, mod:MODIFIER ) -> Self:
+    def set_text_modifier(self, mod:Modifier) -> Self:
         ...
-    def unset_text_modifier( self, mod:MODIFIER ) -> Self:
+    def unset_text_modifier(self, mod:Modifier) -> Self:
         ...
-    def get_text_modifier( self ) -> MODIFIER:
+    def get_text_modifier(self) -> Modifier:
         ...
     
-    def set_horizontal_tab_positions( self, *tab_pos:u8 ) -> Self:
+    def set_horizontal_tab_positions(self, *tab_pos:u8) -> Self:
         '''set horizontal tab positions [ESC D]'''
         ...
-    def get_horizontal_tab_positions( self ) -> list[u8]:
+    def get_horizontal_tab_positions(self) -> list[u8]:
         ...
     
-    def HT( self, index:Optional[int]=None ) -> Self:
+    def HT(self, index:Optional[int]=None) -> Self:
         '''Horizontal tab'''
         ...
     
-    def set_left_margin( self, left:int ) -> Self:
+    def set_left_margin(self, left:int) -> Self:
         '''set left margin [GS L]'''
         ...
-    def get_left_margin( self ) -> int:
+    def get_left_margin(self) -> int:
         ...
     
-    def set_print_area_width( self, width:int ) -> Self:
+    def set_print_area_width(self, width:int) -> Self:
         '''set print area width [GS W]'''
         ...
-    def get_print_area_width( self ) -> int:
+    def get_print_area_width(self) -> int:
         ...
     
-    def move_cursor_abs( self, column:int, line:int ) -> Self:
+    def move_cursor_abs(self, column:int, line:int) -> Self:
         ...
-    def move_cursor_rel( self, column:int, line:int=0 ) -> Self:
+    def move_cursor_rel(self, column:int, line:int=0) -> Self:
         ...
-    def get_cursor( self ) -> tuple[int, int]:
+    def get_cursor(self) -> tuple[int, int]:
         ...
     
-    def set_alignment( self, alignment:Alignment ) -> Self:
+    def set_alignment(self, alignment:Alignment) -> Self:
         '''set print area alignment [ESC a]'''
         ...
-    def get_alignment( self ) -> Alignment:
+    def get_alignment(self) -> Alignment:
         ... 
     
-    def barcode( self ) -> Self:
+    def barcode(self) -> Self:
         ...
-    def qrcode( self ) -> Self:
+    def qrcode(self) -> Self:
         ...
     
-    def image( self, src, scale, position ) -> Self:
+    def image(self, src, scale, position) -> Self:
         ...
     
     

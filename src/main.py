@@ -1,10 +1,11 @@
 from time import sleep
 
 from printers.D100 import D100
+from ImageUtils import Canvas
 
 if __name__ == '__main__':
-    p = D100()
-    p.set_paper_width( 110 )
+    # p = D100()
+    # p.set_paper_width( 110 )
     
     # p.feed_reverse_dots(30)
     # sleep(1)
@@ -77,3 +78,16 @@ if __name__ == '__main__':
     # p.test_line( 1 )
     
     # p.feed_dots(100)
+    
+    
+    
+    
+    c = Canvas(880)
+    c.set_font( "arial.ttf", s:=100 )
+    im = c.generate_text( "Bye Bye", 0 )
+    c.put_image( im, (0,0) )
+    
+    for i in range(10):
+        c.put_image( c.generate_text( f"Hello This is {i}" ), (s*i, s*i) )
+    
+    c.show()
