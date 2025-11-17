@@ -1,11 +1,5 @@
-import logging
-import os
-from typing import Final
-from enum import Enum
-from time import sleep
 
-os.environ["PYUSB_DEBUG"] = 'info'
-logging.basicConfig(level=logging.INFO)
+from enum import Enum
 
 from device_interface.usb import USB_Printer
 from Printer import Printer, Status, Alignment, High_Density_Flag, ESC_POS_CONSTANT
