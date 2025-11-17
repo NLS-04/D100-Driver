@@ -1,7 +1,13 @@
+import logging
+import os
 from time import sleep
 
 from printers.D100 import D100
-from ImageUtils import Canvas
+from ImageUtils import Canvas, Alignment, Modifier, FontManager
+
+os.environ["PYUSB_DEBUG"] = 'info'
+logging.basicConfig(level=logging.INFO)
+
 
 if __name__ == '__main__':
     # p = D100()
@@ -79,15 +85,34 @@ if __name__ == '__main__':
     
     # p.feed_dots(100)
     
-    
-    
+    from pprint import pprint
     
     c = Canvas(880)
-    c.set_font( "arial.ttf", s:=100 )
-    im = c.generate_text( "Bye Bye", 0 )
-    c.put_image( im, (0,0) )
+    c.font.load( "Consolas", s:=100 )
+    # c.font.debug_font()
+    # pprint( FontManager.fonts )
     
-    for i in range(10):
-        c.put_image( c.generate_text( f"Hello This is {i}" ), (s*i, s*i) )
+    # print( c.font.get_line_bbox( "A" ) )
+    # print( c.font.get_line_bbox( "B" ) )
+    # print( c.font.get_line_size( "abcdefghijklmnopqrstuvwxyz0123456789" ) )
+    # print( c.font._raw_bbox( "abcdefghijklmnopqrstuvwxyz0123456789", "lt" ) )
     
-    c.show()
+    c.font.right_space = 0
+    c.font.line_space = 0
+    
+    s = "\n".join( [ " "*i + str(1234) for i in range(10) ] )
+    c.font.render( s ).save("test.png")
+    c.font.render( "abcdefghijklmnopqrstuvwxyzäöü0123456789\nABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ0123456789" ).save("test.png")
+    # c.font.render( "Ag\nÄÄ" ).save("test.png")
+    # c.font._render_line_old( "My Hello World\n  Joe ÄÖÜ" ).save("test.png")
+    
+    # im = c.generate_text( "A", 0, None, Alignment.LEFT )
+    # im = c.generate_text( "B", 0, None, Alignment.LEFT )
+    # # im = c.generate_text( "AB", 0, None, Alignment.LEFT )
+    # im.save("A.png")
+    # c.put_image( im, (0,0) )
+    
+    # for i in range(10):
+    #     c.put_image( c.generate_text( f"Hello This is {i}" ), (s*i, s*i) )
+    
+    # c.show()
